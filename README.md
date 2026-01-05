@@ -1,3 +1,10 @@
+i added 
+
+```yaml
+folia-supported: true
+```
+to [plugin.yml](/src/main/resources/plugin.yml) and yea thats it
+
 # TCPShield
 TCPShield is the plugin for the same named DDoS mitigation service [TCPShield](https://tcpshield.com).
 

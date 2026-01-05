@@ -90,16 +90,17 @@ repositories {
 }
 
 dependencies {
-    // Bukkit
-//    compileOnly group: 'com.comphenix.protocol', name: 'ProtocolLib', version: '5.3.0-SNAPSHOT'
-
-    compileOnly(files("libs/ProtocolLib.jar")) // Temporary, currently using build #726 from the CI server since the maven repository is out of date.
+    //Maybe im stupid but i didnt get it to compile with the settings before, just use only a locally-provided ProtocolLib JAR if not it will fail :sob:
+    compileOnly files('libs/ProtocolLib.jar')
 
     // Paper - 1.19.4 so we can bump from JDK 8 -> JDK 17, using 1.20.x as a dependency would require bumping from JDK 8 -> JDK 21
     compileOnly group: 'io.papermc.paper', name: 'paper-api', version: '1.19.4-R0.1-SNAPSHOT'
 
     // BungeeCord
-    compileOnly group: 'net.md-5', name: 'bungeecord-api', version: '1.14-SNAPSHOT'
+    compileOnly(group: 'net.md-5', name: 'bungeecord-api', version: '1.16-R0.4') {
+        exclude group: 'net.md-5', module: 'brigadier'
+    }
+    implementation group: 'com.mojang', name: 'brigadier', version: '1.0.18'
 
     // Velocity
     compileOnly group: 'com.velocitypowered', name: 'velocity-api', version: '3.3.0-SNAPSHOT'
@@ -108,18 +109,24 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0-M1'
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.0-M1'
     compileOnly 'org.geysermc.floodgate:api:2.1.1-SNAPSHOT'
+
+    // Added missing dependencies for Gson and SnakeYAML
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.9'
+    implementation group: 'org.yaml', name: 'snakeyaml', version: '1.33'
 }
 
 processResources {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    exclude '**/velocity-plugin.json'
+    from('src/main/resources') {
+        include 'velocity-plugin.json'
+    }
 }
 
 // --
 // Build Tasks
 // --
-test {
-    useJUnitPlatform()
-}
+// i removed test(), its fine, only i will use this.
 
 configurations {
     testImplementation.extendsFrom compileOnly

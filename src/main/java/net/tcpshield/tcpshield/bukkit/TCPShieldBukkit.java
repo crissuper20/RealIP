@@ -32,7 +32,12 @@ public class TCPShieldBukkit extends JavaPlugin implements TCPShieldPlugin {
 			packetHandler = new TCPShieldPacketHandler(this);
 
 			// check force plib option -> paper -> plib -> error
-			if (this.configProvider.preferProtocolLib() && getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
+			if (isFolia()) {
+				if (this.configProvider.preferProtocolLib()) {
+					getLogger().warning("ProtocolLib is not supported on Folia");
+				}
+				bukkitImpl = new BukkitPaper(this);
+			} else if (this.configProvider.preferProtocolLib() && getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
 				try {
 					String[] protocolLibVersion = getServer().getPluginManager().getPlugin("ProtocolLib").getDescription().getVersion().split("-")[0].split("\\.");
 					int major = Integer.parseInt(protocolLibVersion[0]);
@@ -95,6 +100,19 @@ public class TCPShieldBukkit extends JavaPlugin implements TCPShieldPlugin {
 	@Override
 	public Logger getLogger() {
 		return super.getLogger();
+	}
+
+	/**
+	 * Checks if the server is running Folia
+	 * @return true if Folia is detected
+	 */
+	private boolean isFolia() {
+		try {
+			Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
 	}
 
 }
